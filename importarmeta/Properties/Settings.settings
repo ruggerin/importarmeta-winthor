@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="importarmeta.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="ddlCriarTblTemporaria" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">create  table TEMP_META(
+CODIGO  NUMBER,
+VLVENDAPREV NUMBER,
+CODFILIAL   NUMBER,
+CODUSUR NUMBER,
+TIPOMETA    CHAR(1),
+DATA DATE,
+CLIPOSPREV NUMBER
+)
+</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
