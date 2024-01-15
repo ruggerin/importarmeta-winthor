@@ -38,16 +38,17 @@ namespace importarmeta
         }
 
         private static void arquivos( string nomearquivo)
-        {/*
-            if (System.IO.File.Exists(@"C:\WinThor\Prod\GLMEP\" + nomearquivo) == true)
+        {
+            if (System.IO.File.Exists(@"C:\WinThor\Prod\PCCFM\" + nomearquivo) == true)
             {
              //   MessageBox.Show("j");
             }
             else
             {
-                System.IO.File.Copy(System.IO.Path.Combine(@"P:\GLMEP", nomearquivo), System.IO.Path.Combine(@"C:\WinThor\Prod\GLMEP", nomearquivo), true);
+                System.IO.File.Copy(System.IO.Path.Combine(@"P:\PCCFM", nomearquivo), System.IO.Path.Combine(@"C:\WinThor\PROD\PCCFM", nomearquivo), true);
 
-            }*/
+            }
+        
         }
 
 

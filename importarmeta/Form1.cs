@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ExcelDataReader;
-using Oracle.DataAccess.Client;
+using Oracle.ManagedDataAccess.Client;
 
 
 
@@ -45,9 +45,16 @@ namespace importarmeta
 
             try
             {
+               // conwinthor = new OracleConnection("Data Source = " + banco +"; User ID = " + usuariobanco +"; Password = " +senhabanco );
+             
 
-                conwinthor = new OracleConnection("Data Source = " + banco +"; User ID = " + usuariobanco +"; Password = " +senhabanco );
+                string stringConexao = "Data Source=(DESCRIPTION=" +
+                        "(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.4.1.249)(PORT=1521)))" +
+                        "(CONNECT_DATA=(SID=WINT))); " +
+                        "User ID="+myusuariobanco+";Password="+ mysenhabanco + ";";
+                conwinthor = new OracleConnection(stringConexao);
                 conwinthor.Open();
+
                 conwinthor.Close();
 
                    
@@ -189,10 +196,11 @@ namespace importarmeta
                        
                     }
                 });
+                    stream.Close();
 
 
-               
-              
+
+
 
                 bool codigo =false;
                 bool codusur = false;
@@ -218,10 +226,10 @@ namespace importarmeta
                     MessageBox.Show(mensagemdeerro, "Importação Inconsistente",MessageBoxButtons.OK,MessageBoxIcon.Error);
                     return;
                 }
-              
-               if (radioButton1.Checked == true) {  tipometa = "D";  }
-               if (radioButton2.Checked == true) {  tipometa = "S";  }
-             //  if (radioButton3.Checked == true) { tipometa = "M";  }
+
+                if (radioButton1.Checked == true) {  tipometa = "D";  }
+                if (radioButton2.Checked == true) {  tipometa = "S";  }
+                if (radioButton3.Checked == true) { tipometa = "M";   }
 
                 tbltemporaria.Clear();
 
@@ -259,6 +267,12 @@ namespace importarmeta
                         { 
                         descricaogrid = executarmanipulacao("SELECT DESCRICAO FROM PCSECAO  WHERE codsec = " + result.Tables[0].Rows[cont]["CODIGO"].ToString(),"d").ToString();
                         }
+
+                    }
+                    if (tipometa == "M") {
+
+
+                            descricaogrid = "TOTAL GERAL";
 
                     }
                     if (vlvendaprev == true) { VLVENDAPREVGRID= Convert.ToDouble( result.Tables[0].Rows[cont]["VLVENDAPREV"].ToString()); }
@@ -303,15 +317,15 @@ namespace importarmeta
                        
                        
                        if(
-                        executarmanipulacao(
-                            "select COUNT(*) "+
-                            "from PCMETA "+
-                            "where CODIGO =:codigo "+
-                            "AND CODUSUR = :codusur "+
-                            "AND DATA = TO_DATE(:DATA,'DD/MM/YYYY') "+
-                            "AND CODFILIAL = :cdfl "+
-                            "AND TIPOMETA = :tpmeta " ,"n"
-                                                             ).ToString() != "0") {
+                            executarmanipulacao(
+                                "select COUNT(*) "+
+                                "from PCMETA "+
+                                "where CODIGO =:codigo "+
+                                "AND CODUSUR = :codusur "+
+                                "AND DATA = TO_DATE(:DATA,'DD/MM/YYYY') "+
+                                "AND CODFILIAL = :cdfl "+
+                                "AND TIPOMETA = :tpmeta " ,"n"
+                             ).ToString() != "0") {
                             //Deletar 
                             executarmanipulacao
                               (
