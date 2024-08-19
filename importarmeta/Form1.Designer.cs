@@ -40,6 +40,7 @@
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -67,7 +68,8 @@
             this.QTVENDAPREV = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MIXPREV = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.button5 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -181,6 +183,17 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Tipo da Meta";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(6, 65);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(77, 17);
+            this.radioButton3.TabIndex = 2;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "M - Mensal";
+            this.radioButton3.UseVisualStyleBackColor = true;
             // 
             // radioButton2
             // 
@@ -348,9 +361,9 @@
             this.panel3.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.panel3.Controls.Add(this.label7);
             this.panel3.Controls.Add(this.dataGridView1);
-            this.panel3.Location = new System.Drawing.Point(12, 63);
+            this.panel3.Location = new System.Drawing.Point(12, 60);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(616, 266);
+            this.panel3.Size = new System.Drawing.Size(616, 269);
             this.panel3.TabIndex = 10;
             this.panel3.Visible = false;
             // 
@@ -386,7 +399,7 @@
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 10;
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridView1.Size = new System.Drawing.Size(610, 239);
+            this.dataGridView1.Size = new System.Drawing.Size(610, 242);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyDown);
             this.dataGridView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.dataGridView1_KeyPress);
@@ -463,22 +476,27 @@
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
-            // radioButton3
+            // backgroundWorker2
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(6, 65);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(77, 17);
-            this.radioButton3.TabIndex = 2;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "M - Mensal";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker2_DoWork);
+            // 
+            // button5
+            // 
+            this.button5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button5.Location = new System.Drawing.Point(11, 335);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(150, 23);
+            this.button5.TabIndex = 11;
+            this.button5.Text = "Recalcular Metas Auxiliares";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(640, 368);
+            this.Controls.Add(this.button5);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.button3);
@@ -547,6 +565,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn QTVENDAPREV;
         private System.Windows.Forms.DataGridViewTextBoxColumn MIXPREV;
         private System.Windows.Forms.RadioButton radioButton3;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.Windows.Forms.Button button5;
     }
 }
 

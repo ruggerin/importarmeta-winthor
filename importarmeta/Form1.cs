@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
+using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 using ExcelDataReader;
 using Oracle.ManagedDataAccess.Client;
 
@@ -28,13 +31,13 @@ namespace importarmeta
         List<meta> tbltemporaria = new List<meta>();
 
 
-        public Form1(   string myusuariowinthor,
-                         string mysenhabanco,
-                  
-                        string mybanco,
-                         string myusuariobanco,
-                        string mynumerorotina
-                    )
+        public Form1(   
+            string myusuariowinthor,
+            string mysenhabanco,
+            string mybanco,
+            string myusuariobanco,
+            string mynumerorotina
+        )
         {
             InitializeComponent();
                 usuariowinthor= myusuariowinthor;
@@ -212,7 +215,7 @@ namespace importarmeta
 
                 foreach (object nomecoluna in result.Tables[0].Columns )
                 {
-                   if(nomecoluna.ToString().ToUpper() == "CODIGO"){codigo = true;  }
+                   if (nomecoluna.ToString().ToUpper() == "CODIGO"){codigo = true;  }
                    if (nomecoluna.ToString().ToUpper() == "CODUSUR") { codusur = true;  }
                    if (nomecoluna.ToString().ToUpper() == "VLVENDAPREV") { vlvendaprev = true; }
                    if (nomecoluna.ToString().ToUpper() == "CLIPOSPREV") { cliposprev = true; }
@@ -298,6 +301,7 @@ namespace importarmeta
                 }
                     excelReader.Close();
                     passoatual++;
+                    Debug.WriteLine("Passo atual: " + tbltemporaria.Count);
                     return;
 
                 }
@@ -412,6 +416,7 @@ namespace importarmeta
 
         private object executarmanipulacao(string comando, string parte)
         {
+            Debug.WriteLine("Comando: " + comando); // Adiciona esta linha
             OracleCommand cmd = new OracleCommand(comando, conwinthor);
                 try {            
                 conwinthor.Open();
@@ -479,7 +484,10 @@ namespace importarmeta
                 }
             }
         }
-
+        public void recaucularMetasAuxiliares()
+        {
+            calcular_meta_dia();
+        }
 
         public void LimparParametros() { ColecaoParametros.Clear(); }
 
@@ -490,6 +498,198 @@ namespace importarmeta
 
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
+
+        }
+
+        private void calcular_meta_dia()
+        {
+
+     
+          //  procss_mes();
+            DataSet diasUteis = get_dias_uteis();
+            int diasuteis_cont = diasUteis.Tables[0].Rows.Count;
+
+            DataSet metas_vendedor_filial = get_metas_totais();
+            //Aqui a mágica acontece, ela verificar as metas totais do periodo, e divide pelos dias uteis.
+            //Acabou o trabalho de corno papai!!! (Sim, eu convertiaa isso tudo numa planilha tosca que me passavam antes pra gerar o sql)
+            for (int linhaatual_rca = 0; linhaatual_rca < metas_vendedor_filial.Tables[0].Rows.Count; linhaatual_rca++)
+            {
+                string codfilial = metas_vendedor_filial.Tables[0].Rows[linhaatual_rca]["codfilial"].ToString();
+                string codusur = metas_vendedor_filial.Tables[0].Rows[linhaatual_rca]["codusur"].ToString();
+                double vlvendaprev = Convert.ToDouble(metas_vendedor_filial.Tables[0].Rows[linhaatual_rca]["vlvendaprev"].ToString());
+                double meta_dia = vlvendaprev / diasuteis_cont;
+                string pdata = globalmes + "/" + globalano + "";
+                executarmanipulacao
+                             (
+                             "delete " +
+                             "from pcmetarca " +
+                             "where  CODUSUR = " + codusur +
+                             " AND  CODFILIAL = " + codfilial +
+                             " AND  TO_CHAR(data, 'mm/yyyy') = '" + pdata + @"'", "n"
+                              );
+
+          
+
+
+                for (int linhaatual = 0; linhaatual < diasuteis_cont; linhaatual++)
+                {
+                    string codigo = diasUteis.Tables[0].Rows[linhaatual]["codfilial"].ToString();
+                    //MessageBox.Show(codusur);
+                    ColecaoParametros.Clear();
+
+                    DateTime data = DateTime.ParseExact(diasUteis.Tables[0].Rows[linhaatual]["data"].ToString(), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                    string dataFormatada = data.ToString("dd/MM/yyyy");
+
+
+                    executarmanipulacao(
+                        "INSERT INTO pcmetarca (" +
+                        "           CODUSUR    , DATA                                 ,     CODFILIAL    ,     VLVENDAPREV ) " +
+                        "VALUES (" + codusur + ", to_date('" + dataFormatada + "','dd/mm/yyyy'), " + codfilial + "," + meta_dia.ToString("0.00", CultureInfo.InvariantCulture) + ") ", "n"
+                        );
+
+
+                }
+
+
+            }
+            MessageBox.Show("Recálculo executado com sucesso", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        private DataSet get_metas_totais()
+        {
+            string pdata = "01/" + globalmes + "/" + globalano + "";
+            DataSet dias_consulta = new DataSet();
+            string qy = @"
+            SELECT 
+
+            codfilial,
+            codusur,
+            sum(vlvendaprev) vlvendaprev 
+            FROM
+            pcmeta 
+            where
+            pcmeta.data  = to_date('" + pdata + @"','dd/mm/yyyy')
+            AND TIPOMETA = 'D'
+           
+            group by
+            codfilial,
+            codusur";
+            dias_consulta = dataset_from_consulta(qy);
+            return dias_consulta;
+        }
+        private DataSet get_dias_uteis()
+        {
+            string pdata = globalmes + "/" + globalano + "";
+            DataSet dias_consulta;
+            string qy = @"
+            SELECT * 
+            FROM pcdiasuteis
+            WHERE 
+            TO_CHAR(pcdiasuteis.data, 'mm/yyyy') = '" + pdata + @"'
+            AND pcdiasuteis.diavendas = 'S'
+            AND CODFILIAL = " + glbalcodfilial + @"
+            
+            ORDER BY DATA"; 
+          
+
+            dias_consulta = dataset_from_consulta(qy);
+            return dias_consulta;
+
+
+        }
+        private DataSet dataset_from_consulta(string qy)
+        {
+            Debug.WriteLineIf(true, "Query: " + qy);
+
+            DataSet data = new DataSet();
+
+            try
+            {
+                conwinthor.Open();
+
+                OracleCommand cmd = new OracleCommand(qy, conwinthor);
+                OracleDataAdapter adapter = new OracleDataAdapter(cmd);
+
+                adapter.Fill(data); // Preenche o DataSet com os resultados da consulta
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                conwinthor.Close();
+            }
+
+            return data;
+        }
+
+        private void procss_mes()
+        {
+            switch (comboBox1.Text)
+            {
+                case "Janeiro":
+                    globalmes = "01";
+                    break;
+                case "Fevereiro":
+                    globalmes = "02";
+                    break;
+                case "Março":
+                    globalmes = "03";
+                    break;
+                case "Abril":
+                    globalmes = "04";
+                    break;
+                case "Maio":
+                    globalmes = "05";
+                    break;
+                case "Junho":
+                    globalmes = "06";
+                    break;
+                case "Julho":
+                    globalmes = "07";
+                    break;
+                case "Agosto":
+                    globalmes = "08";
+                    break;
+                case "Setembro":
+                    globalmes = "09";
+                    break;
+                case "Outubro":
+                    globalmes = "10";
+                    break;
+                case "Novembro":
+                    globalmes = "11";
+                    break;
+                case "Dezembro":
+                    globalmes = "12";
+                    break;
+
+            }
+
+        }
+
+        private void backgroundWorker2_DoWork(object sender, DoWorkEventArgs e)
+        {
+            recaucularMetasAuxiliares();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (ano.Text.Length == 0 || comboBox1.Text.Length == 0)
+            {
+                //MessageBox.Show("Informe o periodo: mês e ano.",,, MessageBoxIcon.Warning);
+                MessageBox.Show("Informe o periodo: mês e ano.");
+
+               
+                return;
+
+            }
+            globalano = ano.Text;
+            glbalcodfilial = comboBox3.Text;
+            procss_mes();
+            backgroundWorker2.RunWorkerAsync();
 
         }
     }
