@@ -85,7 +85,6 @@ C:\Projetos\importarmeta\importarmeta\bin\Debug\importarmeta.pdb
 C:\Projetos\importarmeta\importarmeta\bin\Debug\ExcelDataReader.DataSet.dll
 C:\Projetos\importarmeta\importarmeta\bin\Debug\ExcelDataReader.dll
 C:\Projetos\importarmeta\importarmeta\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
-C:\Projetos\importarmeta\importarmeta\bin\Debug\Oracle.ManagedDataAccess.dll
 C:\Projetos\importarmeta\importarmeta\bin\Debug\System.Buffers.dll
 C:\Projetos\importarmeta\importarmeta\bin\Debug\System.Memory.dll
 C:\Projetos\importarmeta\importarmeta\bin\Debug\System.Numerics.Vectors.dll
@@ -113,3 +112,8 @@ C:\Projetos\importarmeta\importarmeta\obj\Debug\importarmeta.csproj.CoreCompileI
 C:\Projetos\importarmeta\importarmeta\obj\Debug\importar.FC87FF42.Up2Date
 C:\Projetos\importarmeta\importarmeta\obj\Debug\importarmeta.exe
 C:\Projetos\importarmeta\importarmeta\obj\Debug\importarmeta.pdb
+C:\projetos\importarmeta\importarmeta\bin\Debug\System.Diagnostics.DiagnosticSource.dll
+C:\projetos\importarmeta\importarmeta\bin\Debug\System.Formats.Asn1.dll
+C:\projetos\importarmeta\importarmeta\bin\Debug\System.Diagnostics.DiagnosticSource.xml
+C:\projetos\importarmeta\importarmeta\bin\Debug\System.Formats.Asn1.xml
+C:\projetos\importarmeta\importarmeta\bin\Debug\Oracle.DataAccess.dll

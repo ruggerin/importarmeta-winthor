@@ -17,6 +17,7 @@ namespace importarmeta
             double ivlvendaprev, 
             string icliposiprev,
             string iqtvendaprev,
+            string ipedidosprev,
             string imixgrid
             )
         {
@@ -29,6 +30,7 @@ namespace importarmeta
             CLIPOSPREV = icliposiprev;
             ID = id;
             QTVENDAPREV = iqtvendaprev;
+            PEDIDOSPREV = ipedidosprev;
             MIXPREV = imixgrid;
 
         }
@@ -41,6 +43,7 @@ namespace importarmeta
         public int ID { get; set; }
         public string QTVENDAPREV { get; set; }
         public string MIXPREV { get; set; }
+        public string PEDIDOSPREV { get; set; }
         
     }
 }

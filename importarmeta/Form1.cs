@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using ExcelDataReader;
-using Oracle.ManagedDataAccess.Client;
+using Oracle.DataAccess.Client;
 
 
 
@@ -46,24 +46,27 @@ namespace importarmeta
                 senhabanco= mysenhabanco;
                 numerorotina= mynumerorotina;
 
+            Debug.WriteLine("Usuário Winthor: " + usuariowinthor);
+            Debug.WriteLine("Usuário Banco: " + usuariobanco);
+            Debug.WriteLine("Banco: " + banco);
+            Debug.WriteLine("Senha Banco: " + senhabanco);
+            Debug.WriteLine("Rotina: " + numerorotina);
+
+            
+
             try
             {
-               // conwinthor = new OracleConnection("Data Source = " + banco +"; User ID = " + usuariobanco +"; Password = " +senhabanco );
+               conwinthor = new OracleConnection("Data Source = " + banco +"; User ID = " + usuariobanco +"; Password = " +senhabanco );
              
 
-                string stringConexao = "Data Source=(DESCRIPTION=" +
-                        "(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=192.4.1.249)(PORT=1521)))" +
-                        "(CONNECT_DATA=(SID=WINT))); " +
-                        "User ID="+myusuariobanco+";Password="+ mysenhabanco + ";";
-                conwinthor = new OracleConnection(stringConexao);
                 conwinthor.Open();
-
+              
                 conwinthor.Close();
 
                    
             }catch(Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.Message.ToString());
             }
 
         }
@@ -83,23 +86,31 @@ namespace importarmeta
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            label1.Text = numerorotina + " - Importar metas via Excel ";
-            this.Text =  numerorotina + " - Importar metas via Excel ";
-            int anoatual = DateTime.Now.Year;
-            ano.Items.Add(anoatual - 1);
-            ano.Items.Add(anoatual);
-            ano.Items.Add(anoatual + 1);
-            // MessageBox.Show("usuario winthor: "+usuariowinthor+ "\nusuario Banco: "+usuariobanco + "\nbanco: "+ banco + "\nsenha banco: "+ senhabanco+ "\nrotina: " + numerorotina);
-            label8.Text = usuariowinthor + " (" + banco + "@" + usuariobanco + ")";
-            DataSet ods = new DataSet();
-            conwinthor.Open();
-            OracleCommand cmd1 = new OracleCommand("select codigo from pcfilial where pcfilial.dtexclusao is null and codigo <> 99 order by codigo", conwinthor);
-            OracleDataAdapter filias = new OracleDataAdapter(cmd1);
-            filias.Fill(ods);
-            for( int contagem = 0; contagem <ods.Tables[0].Rows.Count;contagem ++) {
-                comboBox3.Items.Add(ods.Tables[0].Rows[contagem][0].ToString());
+
+            try
+            {
+                label1.Text = numerorotina + " - Importar metas via Excel ";
+                this.Text = numerorotina + " - Importar metas via Excel ";
+                int anoatual = DateTime.Now.Year;
+                ano.Items.Add(anoatual - 1);
+                ano.Items.Add(anoatual);
+                ano.Items.Add(anoatual + 1);
+                label8.Text = usuariowinthor + " (" + banco + "@" + usuariobanco + ")";
+                DataSet ods = new DataSet();
+                conwinthor.Open();
+                OracleCommand cmd1 = new OracleCommand("select codigo from pcfilial where pcfilial.dtexclusao is null and codigo <> 99 order by codigo", conwinthor);
+                OracleDataAdapter filias = new OracleDataAdapter(cmd1);
+                filias.Fill(ods);
+                for (int contagem = 0; contagem < ods.Tables[0].Rows.Count; contagem++)
+                {
+                    comboBox3.Items.Add(ods.Tables[0].Rows[contagem][0].ToString());
+                }
+                conwinthor.Close();
             }
-            conwinthor.Close();
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message.ToString());
+            }
 
         }
 
@@ -210,6 +221,7 @@ namespace importarmeta
                 bool vlvendaprev = false;
                 bool cliposprev = false;
                 bool qtdvendaprev = false;
+                bool pedidosprev = false;
                 bool MIX = false;
                     string mensagemdeerro = "Campos obrigatórios não informados no arquivo Excel: \n";
 
@@ -221,6 +233,7 @@ namespace importarmeta
                    if (nomecoluna.ToString().ToUpper() == "CLIPOSPREV") { cliposprev = true; }
                    if (nomecoluna.ToString().ToUpper() == "QTVENDAPREV") { qtdvendaprev = true; }
                    if (nomecoluna.ToString().ToUpper() == "MIXPREV") { MIX = true; }
+                   if(nomecoluna.ToString().ToString().ToUpper() == "PEDIDOSPREV") { pedidosprev = true; }
                     }
                 if (codigo == false){ mensagemdeerro += "CODIGO\n"; }
                 if (codusur == false) { mensagemdeerro += "CODUSUR\n"; }
@@ -258,6 +271,7 @@ namespace importarmeta
                         string CLIPOSPREVGRID = "0";
                         string QTVENDAPREVGRID = "0";
                         string MIXGRID = "0";
+                        string PEDIDOSPREVGRID = "0";
                     if (tipometa == "D") {
                         if (executarmanipulacao("SELECT count(*) FROM PCDEPTO WHERE codepto =" + result.Tables[0].Rows[cont]["CODIGO"].ToString(),"d").ToString() != "0")
                         {
@@ -282,6 +296,7 @@ namespace importarmeta
                     if (cliposprev == true) { CLIPOSPREVGRID=result.Tables[0].Rows[cont]["CLIPOSPREV"].ToString(); }
                     if (qtdvendaprev == true) { QTVENDAPREVGRID = result.Tables[0].Rows[cont]["QTVENDAPREV"].ToString(); }
                     if (MIX == true) { MIXGRID = result.Tables[0].Rows[cont]["MIXPREV"].ToString(); }
+                    if(pedidosprev == true) { PEDIDOSPREVGRID = result.Tables[0].Rows[cont]["PEDIDOSPREV"].ToString(); }
 
                         // MessageBox.Show(result.Tables[0].Rows[cont]["codigo"].ToString());
 
@@ -293,7 +308,7 @@ namespace importarmeta
                                                 descricaogrid,
                                                 VLVENDAPREVGRID,
                                                 CLIPOSPREVGRID,
-                                                QTVENDAPREVGRID,
+                                                QTVENDAPREVGRID,PEDIDOSPREVGRID,
                                                 MIXGRID
 
 
@@ -301,7 +316,7 @@ namespace importarmeta
                 }
                     excelReader.Close();
                     passoatual++;
-                    Debug.WriteLine("Passo atual: " + tbltemporaria.Count);
+                   //Debug.WriteLine("Passo atual: " + tbltemporaria.Count);
                     return;
 
                 }
@@ -354,14 +369,15 @@ namespace importarmeta
                         string nomevendedor = dataGridView1.Rows[linhaatual].Cells["NOMEVENDEDOR"].Value.ToString();
                         string nomedepto = dataGridView1.Rows[linhaatual].Cells["DESC"].Value.ToString();
                         string mixprev = dataGridView1.Rows[linhaatual].Cells["MIXPREV"].Value.ToString();
+                        string pedidosprev = dataGridView1.Rows[linhaatual].Cells["PEDIDOSPREV"].Value.ToString();
 
                         if (nomevendedor != "VENDEDOR NAO LOCALIZADO" && nomedepto != "DEPARTAMENTO NAO LOCALIZADO")
                         {
                            
                             executarmanipulacao(
                             "INSERT INTO PCMETA (" +
-                            "         CODIGO, CODUSUR, DATA, CODFILIAL, TIPOMETA, VLVENDAPREV, QTVENDAPREV, CLIPOSPREV , rotinalanc, mixprev ) " +
-                            "VALUES (" + codigo + "," + pcodusur + ", to_date('" + pdata + "','dd/mm/yyyy'), " + glbalcodfilial + ",'" + tipometa + "'," + vlvendaprev + "," + qtvendaprev + "," + cliposprev + ",3305,"+mixprev+ ") ", "n"
+                            "         CODIGO, CODUSUR, DATA, CODFILIAL, TIPOMETA, VLVENDAPREV, QTVENDAPREV, CLIPOSPREV , rotinalanc, mixprev, pedidosprev ) " +
+                            "VALUES (" + codigo + "," + pcodusur + ", to_date('" + pdata + "','dd/mm/yyyy'), " + glbalcodfilial + ",'" + tipometa + "'," + vlvendaprev + "," + qtvendaprev + "," + cliposprev + ",3305,"+mixprev+ "," +pedidosprev+") ", "n"
                             );
                         }
 
@@ -416,7 +432,7 @@ namespace importarmeta
 
         private object executarmanipulacao(string comando, string parte)
         {
-            Debug.WriteLine("Comando: " + comando); // Adiciona esta linha
+         //   Debug.WriteLine("Comando: " + comando); // Adiciona esta linha
             OracleCommand cmd = new OracleCommand(comando, conwinthor);
                 try {            
                 conwinthor.Open();
@@ -600,7 +616,7 @@ namespace importarmeta
         }
         private DataSet dataset_from_consulta(string qy)
         {
-            Debug.WriteLineIf(true, "Query: " + qy);
+           // Debug.WriteLineIf(true, "Query: " + qy);
 
             DataSet data = new DataSet();
 
